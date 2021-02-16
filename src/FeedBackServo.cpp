@@ -1,5 +1,4 @@
 #include "FeedBackServo.h"
-#include "PID.h"
 
 Servo FeedBackServo::Parallax;
 int FeedBackServo::feedbackPinNumber;
@@ -10,8 +9,21 @@ unsigned long FeedBackServo::rise, FeedBackServo::fall;
 int FeedBackServo::turns = 0;
 float FeedBackServo::Kp = 1.0;
 
-FeedBackServo::FeedBackServo(int _feedbackPinNumber)
+
+
+FeedBackServo::FeedBackServo(int _feedbackPinNumber) : PID::PID()
 {
+
+    feedbackPinNumber = _feedbackPinNumber;
+    int internalPinNumber = digitalPinToInterrupt(_feedbackPinNumber);
+    attachInterrupt(internalPinNumber, feedback, CHANGE);
+}
+
+// FeedBackServo::FeedBackServo(int _feedbackPinNumber, double _Kp, double _Ki, double _Kd, double wind) : PID::PID()
+FeedBackServo::FeedBackServo(int _feedbackPinNumber, const double& Kp, const double& Ki, const double& Kd, const double& Kff, const double& minimum, const double& maximum, const double& anti_wind_up_guard) 
+: PID::PID(Kp, Ki, Kd, Kff, minimum, maximum, anti_wind_up_guard)
+{
+
     feedbackPinNumber = _feedbackPinNumber;
     int internalPinNumber = digitalPinToInterrupt(_feedbackPinNumber);
     attachInterrupt(internalPinNumber, feedback, CHANGE);
@@ -23,40 +35,41 @@ void FeedBackServo::setServoControl(int servoPinNumber)
     Parallax.attach(servoPinNumber);
 }
 
-/**
- * @name setKp
- * @brief Proportional Gain
-*/
-void FeedBackServo::setKp(float _Kp) 
+
+ICACHE_RAM_ATTR void FeedBackServo::rotate_PID(int degree, int threshold)
 {
-    FeedBackServo::Kp = _Kp;
+    double output, offset, value;
+
+    for(int errorAngle = degree - angle; abs(errorAngle) > threshold; errorAngle = degree - angle) {
+
+        Serial.println("-------here");
+        
+        Serial.println(PID::update(errorAngle, 0.0, output));
+        Serial.print(output);
+        Serial.print(" -- ");
+        Serial.println(errorAngle);
+
+
+        out_glob = output;
+
+        if(output > 200.0)
+            output = 200.0;
+        if(output < -200.0)
+            output = -200.0;
+            
+        if(errorAngle > 0)
+            offset = 30.0;
+        else if(errorAngle < 0)
+            offset = -30.0;
+        else
+            offset = 0.0;
+        
+        value = output + offset;
+        Parallax.writeMicroseconds(1490 - value);
+    }
+    Parallax.writeMicroseconds(1490);
 }
 
-// /**
-//  * @name setKi
-//  * @brief Integral Gain
-// */
-// void FeedBackServo::setKi(float _Ki) 
-// {
-//     FeedBackServo::Ki = _Ki;
-// }
-
-// /**
-//  * @name setKd
-//  * @brief Derivative Gain
-// */
-// void FeedBackServo::setKd(float _Kd) 
-// {
-//     FeedBackServo::Kd = _Kd;
-// }
-
-
-
-
-/**
- * @name setKd
- * @brief Derivative Gain
-*/
 void FeedBackServo::rotate(int degree, int threshold)
 {
     float output, offset, value;

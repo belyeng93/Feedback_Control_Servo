@@ -16,8 +16,6 @@
 #define PID_H
 
 
-#include <time.h>
-
 
 //------------------------------
 // PUBLIC DEFINES
@@ -74,7 +72,7 @@ class PID
          * @return 1 if the PID output has been succesfully computed, -1 otherwise.
         */
         int update(const double& target, const double& feedback_value, const double& feed_forward, double& output);
-        int update(const double& target, const double& feedback_value, double& output);
+        // int update(const double& target, const double& feedback_value, double& output);
         int update(const double& error, const double& feed_forward, double& output);
 
         /**
@@ -227,7 +225,7 @@ class PID
         double last_error;
         bool first_time_update;
 
-        clock_t last_time;
+        unsigned long last_time;
 };
 
 // void print_coeffs(const PID& pid);

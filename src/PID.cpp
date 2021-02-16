@@ -17,8 +17,6 @@
 //-----------------------------------
 #include "PID.h"
 #include <Arduino.h>
-// #include <iostream>
-// #include <algorithm>
 
 //-----------------------------------
 // PRIVATE DEFINES
@@ -58,19 +56,15 @@ PID::~PID(){}
 //-----------------------------------
 // Public methods
 //-----------------------------------
-int PID::update(const double& target, const double& feedback_value, double& output)
-{
-    update(target, feedback_value, 0.0, output);
-}
 
 int PID::update(const double& target, const double& feedback_value, const double& feed_forward, double& output)
 {
 // Compute error
     double error = target - feedback_value;
     // Get current time
-    clock_t current_time = clock();
+    double current_time = millis()/1000;
     //compute delta time
-    double delta_time = (current_time - this->last_time) / (double) CLOCKS_PER_SEC;
+    double delta_time = (current_time - this->last_time) ;
 
     //-----------------------------------
     // UPDATE STATUS
@@ -79,7 +73,6 @@ int PID::update(const double& target, const double& feedback_value, const double
 
     if(this->first_time_update)
     {
-        // std::cout << "************* FIRST TIME *****************" << std::endl;
         this->first_time_update = false;
         delta_time = 0.0;
     }
@@ -137,23 +130,30 @@ int PID::update(const double& target, const double& feedback_value, const double
 int PID::update(const double& error, const double& feed_forward, double& output)
 {
     // Get current time
-    clock_t current_time = clock();
+    unsigned long current_time = millis();
     
     //compute delta time
-    double delta_time = (current_time - this->last_time) / (double) CLOCKS_PER_SEC;
+    unsigned long delta_time = (current_time - this->last_time);
+
+    Serial.print("DELTA TIME: ");
+    Serial.print(delta_time);
+    Serial.print(" -- last: ");
+    Serial.print(last_time);
+    Serial.print(" -- curr ");
+    Serial.println(current_time);
 
     //-----------------------------------
     // UPDATE STATUS
     //-----------------------------------
     this->last_time = current_time;
 
+
     if(this->first_time_update)
     {
-        // std::cout << "************* FIRST TIME *****************" << std::endl;
         this->first_time_update = false;
         delta_time = 0.0;
     }
-
+    
     if (delta_time < DELTA_TIME_EPS ) 
     {
         output = 0.0;
@@ -243,6 +243,7 @@ double PID::getMinOutput() const    { return this->min_output; }
 
 void PID::setMaxOutput(const double& max_ouput)     { this->max_output = max_ouput; }
 double PID::getMaxOutput() const    { return this->max_output; }
+
 void PID::setMinMaxOutput(const double& min_ouput, const double& max_ouput)
 {
     setMinOutput(min_ouput);
@@ -256,7 +257,7 @@ void PID::setMinMaxOutput(const double& min_ouput, const double& max_ouput)
 //-----------------------------------
 // Private methods
 //-----------------------------------
-void PID::init_time() { this->last_time = clock(); }
+void PID::init_time() { this->last_time = millis()/1000; }
 
 void PID::init() 
 { 

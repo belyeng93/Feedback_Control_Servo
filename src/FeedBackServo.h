@@ -2,6 +2,7 @@
 #define FEEDBACK360_CONTROL_LIBRARY
 #include <Arduino.h>
 #include <Servo.h>
+#include "PID.h"
 
 #define DC_MIN 0.029
 #define DC_MAX 0.971
@@ -10,16 +11,17 @@
 #define Q2_MIN UNITS_FC/4
 #define Q3_MAX Q2_MIN * 3
 
-
-
-
-class FeedBackServo {
+class FeedBackServo : public PID
+{
     public:
-        FeedBackServo(int feedbackPinNumber = 2);
-        void setServoControl(int servoPinNumber = 3);
-        void setKp(float _Kp = 1.0);
-        void rotate(int degree, int threshold = 4);
+        FeedBackServo(int feedbackPinNumber);
+        FeedBackServo(int _feedbackPinNumber, const double& Kp, const double& Ki, const double& Kd, const double& Kff, const double& minimum, const double& maximum, const double& anti_wind_up_guard);
+        void setServoControl(int servoPinNumber);
+        void rotate_PID(int degree, int threshold);
+        void rotate(int degree, int threshold);
         int Angle();
+        float out_glob = 0;
+
     
     private:
         static void feedback();
