@@ -26,25 +26,23 @@
 #define K_P_DEFAULT             0
 #define K_I_DEFAULT             0
 #define K_D_DEFAULT             0
+
 #define K_FF_DEFAULT            0
+
 #define ANTI_WIND_UP_DEFAULT    3
+
 #define MIN_OUPUT_DEFAULT       -1
 #define MAX_OUPUT_DEFAULT       1  
+
 #define INITIAL_ERR_DEFAULT     0
 #define DELTA_TIME_EPS          1e-7
-
-
-// void print_coeffs(const PID& pid)
-// {
-//     // TODO: FAI I METHODI GET
-//     printf("kp: %f \t ki: %f \t kd: %f \t kf: %f \t antiwindup: %f \t output: (%f, %f)\n", pid.getKp(), pid.getKi(), pid.getKd(), pid.getKf(), pid.getWindupGuard(), pid.getMinOutput(), pid.getMaxOutput());
-// }
 
 //-----------------------------------
 // Constructors & destructors
 //-----------------------------------
     
 PID::PID() { init(); }
+
 PID::PID(const double& K_P, const double& K_I, const double& K_D, const double& K_FF, const double& minimum, const double& maximum, const double& anti_wind_up_guard) : PID()
 {
     setKp(K_P);
@@ -53,8 +51,6 @@ PID::PID(const double& K_P, const double& K_I, const double& K_D, const double& 
     setKf(K_FF);
     setWindupGuard(anti_wind_up_guard);
     setMinMaxOutput(minimum, maximum);
-    // setSamplingTime(SAMPLING_TIME_DEFAULT);
-    
 }
 
 PID::~PID(){}
@@ -138,6 +134,70 @@ int PID::update(const double& target, const double& feedback_value, const double
     return 1;  
 }
 
+int PID::update(const double& error, const double& feed_forward, double& output)
+{
+    // Get current time
+    clock_t current_time = clock();
+    
+    //compute delta time
+    double delta_time = (current_time - this->last_time) / (double) CLOCKS_PER_SEC;
+
+    //-----------------------------------
+    // UPDATE STATUS
+    //-----------------------------------
+    this->last_time = current_time;
+
+    if(this->first_time_update)
+    {
+        // std::cout << "************* FIRST TIME *****************" << std::endl;
+        this->first_time_update = false;
+        delta_time = 0.0;
+    }
+
+    if (delta_time < DELTA_TIME_EPS ) 
+    {
+        output = 0.0;
+        return -1;
+    }
+
+    //-----------------------------------
+    // COMPUTE PROPORZIONAL
+    //-----------------------------------
+    this->P_e = getKp() * error;
+
+    //-----------------------------------
+    // COMPUTE INTEGRATIVE
+    //-----------------------------------
+    this->I_e += getKi() * error * delta_time;
+ 
+    // Anti Windup Check
+    this->I_e = max(this->I_e, -this->windup_guard);
+    this->I_e = min(this->I_e, this->windup_guard);
+    
+
+    //-----------------------------------
+    // COMPUTE DERIVATIVE
+    //-----------------------------------
+    // Compute error gradient
+    double derivative_inc = (error - this->last_error) / delta_time;
+    this->D_e = getKd() * derivative_inc;
+
+    //-----------------------------------
+    // COMPUTE FEEDFORWARD
+    //-----------------------------------
+    this->FF = getKf() * feed_forward;
+
+    this->last_error = error;
+
+    //BIBO output
+    this->output = max(this->min_output, min(this->max_output, (this->P_e + this->I_e + this->D_e + this->FF)));
+
+    output = this->output;
+
+    return 1;  
+}
+
+
 void PID::clear()
 {
     // clear output
@@ -197,6 +257,7 @@ void PID::setMinMaxOutput(const double& min_ouput, const double& max_ouput)
 // Private methods
 //-----------------------------------
 void PID::init_time() { this->last_time = clock(); }
+
 void PID::init() 
 { 
     clear();

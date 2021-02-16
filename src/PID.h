@@ -75,6 +75,7 @@ class PID
         */
         int update(const double& target, const double& feedback_value, const double& feed_forward, double& output);
         int update(const double& target, const double& feedback_value, double& output);
+        int update(const double& error, const double& feed_forward, double& output);
 
         /**
          * @brief   clear: Clears PID error and coefficients 

@@ -23,40 +23,7 @@ void FeedBackServo::setServoControl(int servoPinNumber)
     Parallax.attach(servoPinNumber);
 }
 
-/**
- * @name setKp
- * @brief Proportional Gain
-*/
-void FeedBackServo::setKp(float _Kp) 
-{
-    FeedBackServo::Kp = _Kp;
-}
 
-/**
- * @name setKi
- * @brief Integral Gain
-*/
-void FeedBackServo::setKi(float _Ki) 
-{
-    FeedBackServo::Ki = _Ki;
-}
-
-/**
- * @name setKd
- * @brief Derivative Gain
-*/
-void FeedBackServo::setKd(float _Kd) 
-{
-    FeedBackServo::Kd = _Kd;
-}
-
-
-
-
-/**
- * @name setKd
- * @brief Derivative Gain
-*/
 void FeedBackServo::rotate(int degree, int threshold)
 {
     float output, offset, value;
@@ -67,8 +34,10 @@ void FeedBackServo::rotate(int degree, int threshold)
 
         if(output > 200.0)
             output = 200.0;
+            
         if(output < -200.0)
             output = -200.0;
+
         if(errorAngle > 0)
             offset = 30.0;
         else if(errorAngle < 0)
