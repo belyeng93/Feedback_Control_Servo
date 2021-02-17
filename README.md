@@ -1,4 +1,4 @@
-# Continuous Rotational Servo Feedback Control with Standard ISA PID
+# Continuous Rotational Servo Feedback Control using Standard ISA PID
 ## _Tested with High Speed Parallax 360_
 
 This class implements a feeback control for a continuos rotational servo with feedback pin.
