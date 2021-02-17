@@ -11,11 +11,11 @@
 #define Q2_MIN UNITS_FC/4
 #define Q3_MAX Q2_MIN * 3
 
-class FeedBackServo : public PID
+class FeedbackServo : public PID
 {
     public:
-        FeedBackServo(int feedbackPinNumber);
-        FeedBackServo(int _feedbackPinNumber, const double& Kp, const double& Ki, const double& Kd, const double& Kff, const double& minimum, const double& maximum, const double& anti_wind_up_guard);
+        FeedbackServo(int feedbackPinNumber);
+        FeedbackServo(int _feedbackPinNumber, const double& Kp, const double& Ki, const double& Kd, const double& Kff, const double& minimum, const double& maximum, const double& anti_wind_up_guard);
         void setServoControl(int servoPinNumber);
         void rotate_PID(int degree, int threshold);
         void rotate(int degree, int threshold);

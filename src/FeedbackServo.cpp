@@ -1,17 +1,17 @@
-#include "FeedBackServo.h"
+#include "FeedbackServo.h"
 
-Servo FeedBackServo::Parallax;
-int FeedBackServo::feedbackPinNumber;
-volatile int FeedBackServo::angle;
-float FeedBackServo::thetaPre;
-unsigned int FeedBackServo::tHigh, FeedBackServo::tLow;
-unsigned long FeedBackServo::rise, FeedBackServo::fall;
-int FeedBackServo::turns = 0;
-float FeedBackServo::Kp = 1.0;
+Servo FeedbackServo::Parallax;
+int FeedbackServo::feedbackPinNumber;
+volatile int FeedbackServo::angle;
+float FeedbackServo::thetaPre;
+unsigned int FeedbackServo::tHigh, FeedbackServo::tLow;
+unsigned long FeedbackServo::rise, FeedbackServo::fall;
+int FeedbackServo::turns = 0;
+float FeedbackServo::Kp = 1.0;
 
 
 
-FeedBackServo::FeedBackServo(int _feedbackPinNumber) : PID::PID()
+FeedbackServo::FeedbackServo(int _feedbackPinNumber) : PID::PID()
 {
 
     feedbackPinNumber = _feedbackPinNumber;
@@ -19,8 +19,8 @@ FeedBackServo::FeedBackServo(int _feedbackPinNumber) : PID::PID()
     attachInterrupt(internalPinNumber, feedback, CHANGE);
 }
 
-// FeedBackServo::FeedBackServo(int _feedbackPinNumber, double _Kp, double _Ki, double _Kd, double wind) : PID::PID()
-FeedBackServo::FeedBackServo(int _feedbackPinNumber, const double& Kp, const double& Ki, const double& Kd, const double& Kff, const double& minimum, const double& maximum, const double& anti_wind_up_guard) 
+// FeedbackServo::FeedbackServo(int _feedbackPinNumber, double _Kp, double _Ki, double _Kd, double wind) : PID::PID()
+FeedbackServo::FeedbackServo(int _feedbackPinNumber, const double& Kp, const double& Ki, const double& Kd, const double& Kff, const double& minimum, const double& maximum, const double& anti_wind_up_guard) 
 : PID::PID(Kp, Ki, Kd, Kff, minimum, maximum, anti_wind_up_guard)
 {
 
@@ -29,14 +29,14 @@ FeedBackServo::FeedBackServo(int _feedbackPinNumber, const double& Kp, const dou
     attachInterrupt(internalPinNumber, feedback, CHANGE);
 }
 
-void FeedBackServo::setServoControl(int servoPinNumber)
+void FeedbackServo::setServoControl(int servoPinNumber)
 {
     // Servo control pin attach
     Parallax.attach(servoPinNumber);
 }
 
 
-ICACHE_RAM_ATTR void FeedBackServo::rotate_PID(int degree, int threshold)
+ICACHE_RAM_ATTR void FeedbackServo::rotate_PID(int degree, int threshold)
 {
     double output, offset, value;
 
@@ -70,7 +70,7 @@ ICACHE_RAM_ATTR void FeedBackServo::rotate_PID(int degree, int threshold)
     Parallax.writeMicroseconds(1490);
 }
 
-void FeedBackServo::rotate(int degree, int threshold)
+void FeedbackServo::rotate(int degree, int threshold)
 {
     float output, offset, value;
 
@@ -96,12 +96,12 @@ void FeedBackServo::rotate(int degree, int threshold)
     Parallax.writeMicroseconds(1490);
 }
 
-int FeedBackServo::Angle()
+int FeedbackServo::Angle()
 {
     return angle;
 }
 
-ICACHE_RAM_ATTR void FeedBackServo::feedback() 
+ICACHE_RAM_ATTR void FeedbackServo::feedback() 
 {
     if(digitalRead(feedbackPinNumber)) {
         rise = micros();
