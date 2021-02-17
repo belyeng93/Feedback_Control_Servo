@@ -62,7 +62,8 @@ int PID::update(const double& target, const double& feedback_value, const double
 // Compute error
     double error = target - feedback_value;
     // Get current time
-    double current_time = millis()/1000;
+    double current_time = millis();
+    current_time /= 1000;
     //compute delta time
     double delta_time = (current_time - this->last_time) ;
 
@@ -130,10 +131,13 @@ int PID::update(const double& target, const double& feedback_value, const double
 int PID::update(const double& error, const double& feed_forward, double& output)
 {
     // Get current time
-    unsigned long current_time = millis();
+    double current_time = millis();
+
+    //from millis to seconds
+    current_time /= 1000;
     
     //compute delta time
-    unsigned long delta_time = (current_time - this->last_time);
+    double delta_time = (current_time - this->last_time);
 
     Serial.print("DELTA TIME: ");
     Serial.print(delta_time);
@@ -257,7 +261,7 @@ void PID::setMinMaxOutput(const double& min_ouput, const double& max_ouput)
 //-----------------------------------
 // Private methods
 //-----------------------------------
-void PID::init_time() { this->last_time = millis()/1000; }
+void PID::init_time() { this->last_time = millis(); this->last_time /= 1000;}
 
 void PID::init() 
 { 
