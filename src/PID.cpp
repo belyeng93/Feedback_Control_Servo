@@ -139,12 +139,12 @@ int PID::update(const double& error, const double& feed_forward, double& output)
     //compute delta time
     double delta_time = (current_time - this->last_time);
 
-    Serial.print("DELTA TIME: ");
-    Serial.print(delta_time);
-    Serial.print(" -- last: ");
-    Serial.print(last_time);
-    Serial.print(" -- curr ");
-    Serial.println(current_time);
+    // Serial.print("DELTA TIME: ");
+    // Serial.print(delta_time);
+    // Serial.print(" -- last: ");
+    // Serial.print(last_time);
+    // Serial.print(" -- curr ");
+    // Serial.println(current_time);
 
     //-----------------------------------
     // UPDATE STATUS
@@ -197,6 +197,7 @@ int PID::update(const double& error, const double& feed_forward, double& output)
     this->output = max(this->min_output, min(this->max_output, (this->P_e + this->I_e + this->D_e + this->FF)));
 
     output = this->output;
+    // delay(1000);
 
     return 1;  
 }

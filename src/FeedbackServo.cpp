@@ -41,14 +41,12 @@ ICACHE_RAM_ATTR void FeedbackServo::rotate_PID(int degree, int threshold)
     double output, offset, value;
 
     for(int errorAngle = degree - angle; abs(errorAngle) > threshold; errorAngle = degree - angle) {
+        yield();
 
-        Serial.println("-------here");
-        
-        Serial.println(PID::update(errorAngle, 0.0, output));
-        Serial.print(output);
-        Serial.print(" -- ");
-        Serial.println(errorAngle);
 
+        PID::update(errorAngle, 0.0, output);
+
+        Serial.println(output);
 
         out_glob = output;
 
@@ -75,7 +73,7 @@ void FeedbackServo::rotate(int degree, int threshold)
     float output, offset, value;
 
     for(int errorAngle = degree - angle; abs(errorAngle) > threshold; errorAngle = degree - angle) {
-
+        yield();
         output = errorAngle * Kp;
 
         if(output > 200.0)
