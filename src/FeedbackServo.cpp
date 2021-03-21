@@ -35,18 +35,24 @@ void FeedbackServo::setServoControl(int servoPinNumber)
     Parallax.attach(servoPinNumber);
 }
 
+void FeedbackServo::write(int degrees)
+{
+    // Servo control pin attach
+    rotate_PID(degrees, 1);
+}
 
-ICACHE_RAM_ATTR void FeedbackServo::rotate_PID(int degree, int threshold)
+
+ICACHE_RAM_ATTR void FeedbackServo::rotate_PID(int degrees, int threshold)
 {
     double output, offset, value;
 
-    for(int errorAngle = degree - angle; abs(errorAngle) > threshold; errorAngle = degree - angle) {
+    for(int errorAngle = degrees - angle; abs(errorAngle) > threshold; errorAngle = degrees - angle) {
         yield();
 
 
         PID::update(errorAngle, 0.0, output);
 
-        Serial.println(output);
+        // Serial.println(output);
 
         out_glob = output;
 
@@ -68,11 +74,11 @@ ICACHE_RAM_ATTR void FeedbackServo::rotate_PID(int degree, int threshold)
     Parallax.writeMicroseconds(1490);
 }
 
-void FeedbackServo::rotate(int degree, int threshold)
+void FeedbackServo::rotate(int degrees, int threshold)
 {
     float output, offset, value;
 
-    for(int errorAngle = degree - angle; abs(errorAngle) > threshold; errorAngle = degree - angle) {
+    for(int errorAngle = degrees - angle; abs(errorAngle) > threshold; errorAngle = degrees - angle) {
         yield();
         output = errorAngle * Kp;
 
@@ -94,7 +100,7 @@ void FeedbackServo::rotate(int degree, int threshold)
     Parallax.writeMicroseconds(1490);
 }
 
-int FeedbackServo::Angle()
+int FeedbackServo::read()
 {
     return angle;
 }

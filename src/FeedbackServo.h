@@ -17,9 +17,11 @@ class FeedbackServo : public PID
         FeedbackServo(int feedbackPinNumber);
         FeedbackServo(int _feedbackPinNumber, const double& Kp, const double& Ki, const double& Kd, const double& Kff, const double& minimum, const double& maximum, const double& anti_wind_up_guard);
         void setServoControl(int servoPinNumber);
-        void rotate_PID(int degree, int threshold);
-        void rotate(int degree, int threshold);
-        int Angle();
+        void rotate_PID(int degrees, int threshold);
+        void rotate(int degrees, int threshold);
+        void write(int degrees);
+
+        int read();
         float out_glob = 0;
 
     
